@@ -1,146 +1,156 @@
 const websocketString =
-  window.location.hostname === "127.0.0.1"
-    ? "ws://localhost:8000/ws"
-    : `wss://${window.location.hostname}/ws`;
+  window.location.hostname === '127.0.0.1'
+    ? 'ws://localhost:8000/ws'
+    : `wss://${window.location.hostname}/ws`
 
-const ws = new WebSocket(websocketString);
+const ws = new WebSocket(websocketString)
 
-const sendButton = document.getElementById("sendButton");
-const userInput = document.getElementById("userInput");
-const chatHistory = document.getElementById("chatHistory");
-const newChatBtn = document.getElementById("new");
-const chatList = document.getElementById("chatList");
+const sendButton = document.getElementById('sendButton')
+const userInput = document.getElementById('userInput')
+const chatHistory = document.getElementById('chatHistory')
+const newChatBtn = document.getElementById('new')
+const chatList = document.getElementById('chatList')
+const toggleSidebarBtn = document.getElementById('toggleSidebar')
+const chatSidebar = document.getElementById('sidebar')
 
-let lastUserMessageDiv = null;
-let isNewUserInput = true;
-let accumulatedAIResponse = "";
+let lastUserMessageDiv = null
+let isNewUserInput = true
+let accumulatedAIResponse = ''
 
 // Load or initialize state
-let appState = JSON.parse(localStorage.getItem("chatApp") || "{}");
+let appState = JSON.parse(localStorage.getItem('chatApp') || '{}')
 if (!appState.chats) {
-  const newChatId = `chat_${Date.now()}`;
+  const newChatId = `chat_${Date.now()}`
   appState = {
     chats: { [newChatId]: [] },
-    activeChatId: newChatId,
-  };
-  localStorage.setItem("chatApp", JSON.stringify(appState));
+    activeChatId: newChatId
+  }
+  localStorage.setItem('chatApp', JSON.stringify(appState))
 }
 
-const getActiveChat = () => appState.chats[appState.activeChatId];
+const getActiveChat = () => appState.chats[appState.activeChatId]
 
 const saveChatState = () => {
-  localStorage.setItem("chatApp", JSON.stringify(appState));
-};
+  localStorage.setItem('chatApp', JSON.stringify(appState))
+}
 
 const renderChat = () => {
-  chatHistory.innerHTML = "";
+  chatHistory.innerHTML = ''
   getActiveChat().forEach(({ role, content }) => {
-    const div = document.createElement("div");
-    div.className = `chat-message ${role}`;
-    div.innerHTML = content;
-    chatHistory.appendChild(div);
-  });
-};
+    const div = document.createElement('div')
+    div.className = `chat-message ${role}`
+    div.innerHTML = content
+    chatHistory.appendChild(div)
+  })
+  // Κατεβάζουμε το scroll μετά την εμφάνιση όλων των μηνυμάτων
+  chatHistory.scrollTop = chatHistory.scrollHeight
+}
 
 const renderChatList = () => {
-  chatList.innerHTML = "";
-  const chatIds = Object.keys(appState.chats);
+  chatList.innerHTML = ''
+  const chatIds = Object.keys(appState.chats)
   chatIds.forEach((chatId, index) => {
-    const chatButton = document.createElement("button");
+    const chatButton = document.createElement('button')
     chatButton.className =
-      "btn btn-outline-secondary btn-sm d-block mb-1 w-100";
-    chatButton.textContent = `Chat ${index + 1}`;
+      'btn btn-outline-secondary btn-sm d-block mb-1 w-100'
+    chatButton.textContent = `Chat ${index + 1}`
     if (chatId === appState.activeChatId) {
-      chatButton.classList.add("active");
+      chatButton.classList.add('active')
     }
     chatButton.onclick = () => {
-      appState.activeChatId = chatId;
-      saveChatState();
-      renderChat();
-      renderChatList();
-    };
-    chatList.appendChild(chatButton);
-  });
-};
+      appState.activeChatId = chatId
+      saveChatState()
+      renderChat()
+      renderChatList()
+      handleChatSelect()
+    }
+    chatList.appendChild(chatButton)
+  })
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderChat();
-  renderChatList();
-});
+document.addEventListener('DOMContentLoaded', () => {
+  renderChat()
+  renderChatList()
+})
 
-// Επεξεργασία του κειμένου για HTML
-const processText = (text) => {
-  // Αντικατάσταση **bold** με <strong>
-  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  
-  // Προσθήκη <br> πριν από το - ή αριθμημένες λίστες (π.χ., 1., 2., 3.)
-  text = text.replace(/\n(\-)/g, '<br>-');       // Bullet lists
-  text = text.replace(/\n(\d+\.)/g, '<br>$1');   // Αριθμημένες λίστες
+const processText = text => {
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+  text = text.replace(/\n(\-)/g, '<br>-')
+  text = text.replace(/\n(\d+\.)/g, '<br>$1')
+  text = text.replace(/([,!])\s*/g, '$1 ')
+  text = text.replace(/\n/g, '<br>')
+  return text
+}
 
-  // Επεξεργασία για ειδικούς χαρακτήρες όπως , ή !
-  text = text.replace(/([,!])\s*/g, '$1 ');  // Διασφαλίζει ότι οι χαρακτήρες σαν , και ! δεν αλλάζουν γραμμή
-
-  // Αντικατάσταση \n με <br> για γενική αλλαγή γραμμής
-  text = text.replace(/\n/g, '<br>');
-
-  return text;
-};
-
-// Συνάρτηση για την εμφάνιση του κειμένου στο frontend
+// WebSocket response handling
 ws.onmessage = ({ data: message }) => {
-  if (message === "__END__") {
-    saveMessage("ai-response", accumulatedAIResponse);
-    accumulatedAIResponse = "";
-    return;
+  if (message === '__END__') {
+    saveMessage('ai-response', accumulatedAIResponse)
+    accumulatedAIResponse = ''
+    return
   }
 
   if (lastUserMessageDiv && !isNewUserInput) {
-    lastUserMessageDiv.innerHTML += processText(message); // Επεξεργασία κειμένου πριν την εμφάνιση
-    accumulatedAIResponse += message;
+    lastUserMessageDiv.innerHTML += processText(message)
+    accumulatedAIResponse += message
   } else {
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "chat-message ai-response";
-
-    // Επεξεργασία κειμένου και εφαρμογή μορφοποίησης
-    messageDiv.innerHTML = processText(message);
-
-    chatHistory.appendChild(messageDiv);
-    lastUserMessageDiv = messageDiv;
-    isNewUserInput = false;
-    accumulatedAIResponse = message;
+    const messageDiv = document.createElement('div')
+    messageDiv.className = 'chat-message ai-response'
+    messageDiv.innerHTML = processText(message)
+    chatHistory.appendChild(messageDiv)
+    lastUserMessageDiv = messageDiv
+    isNewUserInput = false
+    accumulatedAIResponse = message
   }
-};
+  // Αυτόματη κύλιση προς τα κάτω μετά την προσθήκη του νέου μηνύματος
+  chatHistory.scrollTop = chatHistory.scrollHeight
+}
 
+// Send message
 sendButton.onclick = () => {
-  const message = userInput.value.trim();
-  if (!message) return;
+  const message = userInput.value.trim()
+  if (!message) return
 
-  const userInputDiv = document.createElement("div");
-  userInputDiv.className = "chat-message user-input";
-  userInputDiv.textContent = message;
-  chatHistory.appendChild(userInputDiv);
+  const userInputDiv = document.createElement('div')
+  userInputDiv.className = 'chat-message user-input'
+  userInputDiv.textContent = message
+  chatHistory.appendChild(userInputDiv)
 
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-  ws.send(message);
-  userInput.value = "";
-  isNewUserInput = true;
-  lastUserMessageDiv = null;
+  // Κατεβάζουμε το scroll μετά την προσθήκη του μηνύματος
+  chatHistory.scrollTop = chatHistory.scrollHeight
 
-  saveMessage("user-input", message);
-};
+  ws.send(message)
+  userInput.value = ''
+  isNewUserInput = true
+  lastUserMessageDiv = null
+
+  saveMessage('user-input', message)
+}
 
 const saveMessage = (role, content) => {
-  const chat = getActiveChat();
-  chat.push({ role, content });
-  appState.chats[appState.activeChatId] = chat;
-  saveChatState();
-};
+  const chat = getActiveChat()
+  chat.push({ role, content })
+  appState.chats[appState.activeChatId] = chat
+  saveChatState()
+}
 
 newChatBtn.onclick = () => {
-  const newChatId = `chat_${Date.now()}`;
-  appState.chats[newChatId] = [];
-  appState.activeChatId = newChatId;
-  saveChatState();
-  renderChat();
-  renderChatList();
-};
+  const newChatId = `chat_${Date.now()}`
+  appState.chats[newChatId] = []
+  appState.activeChatId = newChatId
+  saveChatState()
+  renderChat()
+  renderChatList()
+}
+
+// Toggle sidebar for mobile
+toggleSidebarBtn.addEventListener('click', () => {
+  chatSidebar.classList.toggle('open')
+})
+
+// Auto-close sidebar on mobile when chat selected
+const handleChatSelect = () => {
+  if (window.innerWidth <= 768) {
+    chatSidebar.classList.remove('open')
+  }
+}

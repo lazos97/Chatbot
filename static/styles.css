@@ -1,3 +1,4 @@
+/* Base chat history */
 .chat-history {
   text-align: left;
   width: 100%;
@@ -8,10 +9,16 @@
   padding-bottom: 60px;
 }
 
+/* Center container */
 .container {
   max-width: 70%;
 }
 
+.container-md {
+  max-width: 100%;
+}
+
+/* Sidebar (desktop) */
 .chat-history-v2 {
   height: 100%;
   width: 25%;
@@ -19,6 +26,7 @@
   overflow-y: scroll;
 }
 
+/* Main layout */
 .main-wrapper {
   display: flex;
   width: 100%;
@@ -26,13 +34,10 @@
   height: calc(100vh - 55px);
 }
 
+/* Message bubbles */
 .chat-message {
   width: fit-content;
   word-wrap: break-word;
-}
-
-.container-md {
-  max-width: 100%;
 }
 
 .chat-message.user-input {
@@ -51,12 +56,50 @@
   margin-bottom: 8px;
 }
 
+/* Footer input */
 #footer {
   position: fixed;
-  bottom: 3%;
+  bottom: 1%;
   z-index: 5;
   background-color: white;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   padding: 10px;
   padding-top: 20px;
+}
+
+/* Toggle button hidden on desktop */
+#toggleSidebar {
+  display: none;
+}
+
+/* Responsive sidebar overlay on mobile */
+@media (max-width: 768px) {
+  .chat-history-v2 {
+    position: fixed;
+    top: 55px;
+    left: 0;
+    height: calc(100vh - 55px);
+    background: white;
+    z-index: 10;
+    width: 50%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .chat-history-v2.open {
+    transform: translateX(0);
+  }
+
+  #toggleSidebar {
+    display: block;
+  }
+
+  .container {
+    max-width: 90%;
+  }
+
+  .main-wrapper {
+    height: 100%;
+    flex-direction: column;
+  }
 }

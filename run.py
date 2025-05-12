@@ -1,3 +1,5 @@
+#Chatbot is live on render in this URL: https://chatbot-jihd.onrender.com/
+
 import uvicorn
 
 if __name__ == "__main__":

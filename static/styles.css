@@ -114,7 +114,7 @@ h6 {
 /* Βασικό wrapper */
 .main-wrapper {
   display: flex;
-  min-height: calc(100vh - 150px);
+  min-height: calc(100vh - 76px);
   position: relative;
 }
 

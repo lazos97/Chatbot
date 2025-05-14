@@ -1,4 +1,4 @@
-#Chatbot is live on render in this URL: https://chatbot-jihd.onrender.com/
+#Το Chatbot είναι live στο Render σε αυτό το URL: https://chatbot-jihd.onrender.com/
 
 import uvicorn
 

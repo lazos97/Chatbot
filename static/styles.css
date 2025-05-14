@@ -1,105 +1,563 @@
-/* Base chat history */
-.chat-history {
-  text-align: left;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  max-height: calc(100vh - 300px);
-  padding-bottom: 60px;
+/* Χρώματα εφαρμογής */
+:root {
+  --primary-color: #6c5ce7;
+  --primary-dark: #5348c7;
+  --secondary-color: #00cec9;
+  --light-color: #f9f9f9;
+  --dark-color: #2d3436;
+  --success-color: #00b894;
+  --warning-color: #fdcb6e;
+  --danger-color: #d63031;
+  --neutral-gray: #636e72;
+
+  /* Σκιές, gradients */
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
+  --gradient-secondary: linear-gradient(
+    135deg,
+    var(--secondary-color),
+    #81ecec
+  );
+  --transition-speed: 0.3s;
+  --border-radius: 12px;
+
+  /* Βασική γραμματοσειρά */
+  --font-main: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont,
+    sans-serif;
 }
 
-/* Center container */
-.container {
-  max-width: 70%;
+/* Global styles */
+body {
+  font-family: var(--font-main);
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  color: var(--dark-color);
+  line-height: 1.6;
+}
+
+.btn-outline-secondary:hover {
+  color: rgb(92, 90, 90);
+}
+
+.container.mt-6 {
+  padding-top: 10rem;
 }
 
 .container-md {
+  /* Ευθυγράμμιση περιεχομένου προς τα δεξιά */
   max-width: 100%;
+  display: flex !important;
+  justify-content: flex-end !important;
 }
 
-/* Sidebar (desktop) */
-.chat-history-v2 {
-  height: 100%;
-  width: 25%;
-  padding: 3rem 15px 0;
-  overflow-y: scroll;
+.container {
+  max-width: 1200px;
 }
 
-/* Main layout */
+/* Επικεφαλίδες */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+/* Navbar styling */
+.navbar {
+  background: var(--gradient-primary) !important;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .btn-outline-light {
+  /* Στυλ κουμπιού στην navbar */
+  border-width: 2px;
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: all var(--transition-speed);
+}
+
+.navbar .btn-outline-light:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown μενού */
+.dropdown-menu {
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  border: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  transition: all var(--transition-speed);
+}
+
+.dropdown-item:hover {
+  background-color: rgba(108, 92, 231, 0.1);
+  transform: translateX(5px);
+}
+
+/* Βασικό wrapper */
 .main-wrapper {
   display: flex;
-  width: 100%;
-  flex-direction: row;
-  height: calc(100vh - 55px);
+  min-height: calc(100vh - 150px);
+  position: relative;
 }
 
-/* Message bubbles */
-.chat-message {
-  width: fit-content;
-  word-wrap: break-word;
-}
-
-.chat-message.user-input {
-  background-color: #d0eaff;
-  align-self: flex-end;
-  border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 8px;
-}
-
-.chat-message.ai-response {
-  background-color: #d1d1d17d;
-  align-self: flex-start;
-  border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 8px;
-}
-
-/* Footer input */
-#footer {
+/* Sidebar style */
+.chat-history-v2 {
+  width: 280px;
+  background: white;
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 76px);
   position: fixed;
-  bottom: 1%;
-  z-index: 5;
-  background-color: white;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  padding-top: 20px;
+  left: 0;
+  top: 76px;
+  z-index: 1000;
+  transition: transform var(--transition-speed);
 }
 
-/* Toggle button hidden on desktop */
+.chat-history-v2 h2 {
+  /* Επικεφαλίδα sidebar */
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.chat-history-v2 h2:after {
+  /* Γραμμή κάτω από την επικεφαλίδα */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+}
+
+.chat-history-v2 #new {
+  /* Νέο chat button */
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 12px;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
+
+.chat-history-v2 #new:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(108, 92, 231, 0.4);
+}
+
+/* Λίστα chats στο sidebar */
+#chatList {
+  overflow-y: auto;
+  flex-grow: 1;
+  margin-right: -0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Προσαρμοσμένο scrollbar */
+#chatList::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chatList::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+#chatList::-webkit-scrollbar-thumb {
+  background: rgba(108, 92, 231, 0.3);
+  border-radius: 10px;
+}
+
+/* Στυλ για κάθε κουμπί συνομιλίας */
+#chatList button {
+  transition: all var(--transition-speed);
+  margin-bottom: 8px;
+  border-radius: var(--border-radius);
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+#chatList button:before {
+  /* Ένδειξη στα αριστερά του κουμπιού */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: transparent;
+  transition: all var(--transition-speed);
+}
+
+#chatList button:hover {
+  background: rgba(108, 92, 231, 0.05);
+  transform: translateX(3px);
+  border-color: rgba(108, 92, 231, 0.3);
+}
+
+#chatList button:hover:before {
+  background: var(--primary-color);
+}
+
+#chatList button.active {
+  background: rgba(108, 92, 231, 0.1);
+  border-color: rgba(108, 92, 231, 0.4);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+#chatList button.active:before {
+  background: var(--primary-color);
+}
+
+/* Κουμπί για εμφάνιση/απόκρυψη sidebar */
 #toggleSidebar {
-  display: none;
+  top: 70px;
+  left: 20px;
+  z-index: 1010;
+  background: var(--primary-color);
+  border: none;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--box-shadow);
+  transition: all var(--transition-speed);
 }
 
-/* Responsive sidebar overlay on mobile */
+#toggleSidebar:hover {
+  transform: scale(1.1);
+}
+
+/* Main content */
+.container.mt-5 {
+  margin-left: 300px;
+  max-width: 100%;
+  padding: 2rem;
+  width: calc(100% - 300px);
+  transition: all var(--transition-speed);
+}
+
+/* Κάρτα συνομιλίας */
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  transition: all var(--transition-speed);
+}
+
+.card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 600;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Ιστορικό συνομιλίας */
+.chat-history {
+  height: 60vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+/* Μηνύματα chat */
+.chat-message {
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.3s ease-out;
+  max-width: 85%;
+  word-wrap: break-word;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  position: relative;
+  line-height: 1.6;
+}
+
+/* Μηνύματα χρήστη */
+.chat-message.user-input {
+  align-self: flex-end;
+  background: var(--gradient-primary);
+  color: white;
+  border-bottom-right-radius: 0;
+  margin-left: auto;
+  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+}
+
+.chat-message.user-input:after {
+  content: '';
+  position: absolute;
+  right: -10px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 10px solid var(--primary-dark);
+  border-top: 10px solid transparent;
+}
+
+/* Μηνύματα AI */
+.chat-message.ai-response {
+  text-align: left;
+  align-self: flex-start;
+  background: white;
+  color: var(--dark-color);
+  border-bottom-left-radius: 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.chat-message.ai-response:after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-right: 10px solid white;
+  border-top: 10px solid transparent;
+}
+
+.chat-message.ai-response strong {
+  color: var(--primary-color);
+}
+
+#footer {
+  margin-top: 1.5rem;
+}
+
+.input-group {
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.form-control {
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  background-color: white;
+  transition: all var(--transition-speed);
+}
+
+.form-control:focus {
+  box-shadow: none;
+  background-color: #f9f9f9;
+}
+
+.input-group .btn {
+  padding: 0 1.5rem;
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.input-group .btn:hover {
+  background: var(--primary-dark);
+  transform: translateX(3px);
+}
+
+/* Κάρτα για τις εικόνες */
+.card-body img {
+  max-width: 100%;
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-speed);
+}
+
+.card-body img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive για μικρές οθόνες */
 @media (max-width: 768px) {
   .chat-history-v2 {
-    position: fixed;
-    top: 55px;
-    left: 0;
-    height: calc(100vh - 55px);
-    background: white;
-    z-index: 10;
-    width: 50%;
     transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
+    width: 250px;
   }
 
   .chat-history-v2.open {
     transform: translateX(0);
   }
 
-  #toggleSidebar {
-    display: block;
+  .container.mt-5 {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+    max-width: 100%;
   }
 
-  .container {
+  .card-header {
+    font-size: 1rem;
+  }
+
+  .chat-message {
     max-width: 90%;
+    padding: 0.75rem;
   }
 
-  .main-wrapper {
-    height: 100%;
-    flex-direction: column;
+  .form-control {
+    padding: 0.75rem 1rem;
   }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+
+  #toggleSidebar {
+    top: 85px;
+  }
+}
+
+.typing-indicator {
+  display: inline-block;
+  position: relative;
+  margin-left: 10px;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  float: left;
+  margin: 0 1px;
+  background-color: var(--primary-color);
+  display: block;
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+/* animations */
+.typing-indicator span:nth-of-type(1) {
+  animation: typing 1s infinite 0s;
+}
+.typing-indicator span:nth-of-type(2) {
+  animation: typing 1s infinite 0.25s;
+}
+.typing-indicator span:nth-of-type(3) {
+  animation: typing 1s infinite 0.5s;
+}
+
+@keyframes typing {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Εφέ για hover κουμπιών */
+.btn-primary:hover,
+.btn-success:hover {
+  box-shadow: 0 0 20px rgba(108, 92, 231, 0.6);
+}
+
+/* Timestamp μηνυμάτων */
+.message-timestamp {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* Φόρτωση εικόνας*/
+.loading-spinner {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  margin: 2rem auto;
+}
+
+.loading-spinner:after {
+  content: ' ';
+  display: block;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 6px solid var(--primary-color);
+  border-color: var(--primary-color) transparent var(--primary-color)
+    transparent;
+  animation: spinner 1.2s linear infinite;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Εφέ gradient σε επικεφαλίδες */
+h3 {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+
+/* μοτίβο φόντου */
+body {
+  background-image: radial-gradient(#d1d8e0 1px, transparent 1px),
+    radial-gradient(#d1d8e0 1px, transparent 1px);
+  background-position: 0 0, 25px 25px;
+  background-size: 50px 50px;
 }

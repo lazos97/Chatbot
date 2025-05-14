@@ -17,7 +17,7 @@ let lastUserMessageDiv = null
 let isNewUserInput = true
 let accumulatedAIResponse = ''
 
-// Load or initialize state
+// Κατάσταση φόρτωσης ή προετοιμασίας
 let appState = JSON.parse(localStorage.getItem('chatApp') || '{}')
 if (!appState.chats) {
   const newChatId = `chat_${Date.now()}`
@@ -82,7 +82,7 @@ const processText = text => {
   return text
 }
 
-// WebSocket response handling
+// WebSocket χειρισμός απόκρισης
 ws.onmessage = ({ data: message }) => {
   if (message === '__END__') {
     saveMessage('ai-response', accumulatedAIResponse)
@@ -106,7 +106,7 @@ ws.onmessage = ({ data: message }) => {
   chatHistory.scrollTop = chatHistory.scrollHeight
 }
 
-// Send message
+// Αποστολή μηνύματος
 sendButton.onclick = () => {
   const message = userInput.value.trim()
   if (!message) return
@@ -143,12 +143,12 @@ newChatBtn.onclick = () => {
   renderChatList()
 }
 
-// Toggle sidebar for mobile
+// Εναλλαγή πλευρικής γραμμής για κινητά
 toggleSidebarBtn.addEventListener('click', () => {
   chatSidebar.classList.toggle('open')
 })
 
-// Auto-close sidebar on mobile when chat selected
+// Αυτόματο κλείσιμο πλαϊνής γραμμής στο κινητό όταν είναι επιλεγμένη η συνομιλία
 const handleChatSelect = () => {
   if (window.innerWidth <= 768) {
     chatSidebar.classList.remove('open')

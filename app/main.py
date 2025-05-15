@@ -25,7 +25,7 @@ chat_responses = []
 # Προκαθορισμένος ρόλος του bot: Ειδικός σε διατροφή και άσκηση
 chat_log = [{
     'role': 'system',
-    'content': 'Είσαι ειδικός σε διατροφή και άσκηση. Μπορείς να βοηθήσεις τους χρήστες με προγράμματα διατροφής και γυμναστικής, να τους βοηθήσεις να χάσουν βάρος ή να αποκτήσουν μυϊκή μάζα, αλλά και να απαντάς σε γενικές ερωτήσεις.'
+    'content': 'You are a nutrition and fitness expert. You can help users with diet and workout plans, assist them in losing weight or gaining muscle mass, and also answer general questions.'
 }]
 
 # GET αίτημα για την αρχική σελίδα συνομιλίας

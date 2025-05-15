@@ -264,7 +264,6 @@ h6 {
 .container.mt-5 {
   margin-left: 300px;
   max-width: 100%;
-  padding: 2rem;
   width: calc(100% - 300px);
   transition: all var(--transition-speed);
 }
